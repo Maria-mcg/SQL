@@ -1,0 +1,715 @@
+SELECT *from customer;
+
+SELECT *FROM product;
+
+SELECT *FROM sales;
+
+----SECTION 6: SELECTION COMMANDS: FILTERING------
+---IN CONDITION IS USED TO HELP REDUCE THE NEED TO USE MULTIPLE OR CONDITIONS IN A SELECT, INSERT, UPDATE, OR DELETE STATEMENT
+
+SELECT *FROM customer 
+WHERE city in ('Philadelphia', 'Seattle');
+
+---BETWEEN---
+
+SELECT *FROM customer
+WHERE age BETWEEN 20 AND 30;
+
+SELECT *FROM customer
+WHERE age >= 20 and age <= 30;
+
+
+SELECT *FROM sales
+WHERE Ship_date BETWEEN '2015-04-01' AND '2016-04-01';
+
+---LIKE---
+---CONDITION ALLOWS YOU TO PERFORM MATCHING---
+--% STRING
+-- _ SINGLE CHARACTER
+
+SELECT *FROM customer
+WHERE customer_name LIKE 'J%';
+
+SELECT *FROM customer
+WHERE customer_name LIKE '%Nelson%';
+
+SELECT *FROM customer
+WHERE customer_name like '____ %';
+
+SELECT distinct city FROM customer
+WHERE city not like 'S%'
+
+SELECT *FROM customer 
+WHERE customer_name LIKE 'G\%';
+
+SELECT distinct *FROM customer 
+WHERE city in ('North', 'east');
+
+SELECT *From sales 
+WHERE profit BETWEEN '100' AND '500';
+
+SELECT *from customer
+WHERE customer_name LIKE '% ____'; --custome whose last name contain only 4 characters using LIKE 
+
+---SECTION 7: SELECTION COMMAND :ORDERING---
+
+
+/* 
+ORDER BY COMMAND
+*/
+
+SELECT
+*from customer
+WHERE state = 'California'
+ORDER BY  Customer_name;
+
+SELECT *FROM customer
+WHERE state = 'California'
+ORDER BY customer_name desc;
+
+SELECT *FROM customer 
+ORDER BY city asc, customer_name desc;
+
+SELECT *FROM customer
+ORDER BY 2 asc;
+
+SELECT *FROM customer ORDER BY age desc;
+
+----LIMIT----
+
+--Limit statement is used to limit the number of records returned based on a limit value. 
+
+SELECT *FROM customer WHERE age> 25 ORDER BY age DESC LIMIT 8;
+
+SELECT *FROM customer WHERE age> 25 ORDER BY age ASC LIMIT 10;
+
+/* Exercise 7: SORTING 
+
+retrieve all order where discount value is >0 order by DESC
+lIMIT THE NUMBR TO TOP 10
+*/
+
+SELECT *FROM SALES;
+
+SELECT *FROM sales WHERE discount >0 ORDER BY discount DESC;
+
+SELECT *FROM sales WHERE discount >0 ORDER BY discount DESC LIMIT 10;
+
+--- SECTION 8: Alias----
+--AS---
+SELECT customer_id as "Serial Number", customer_name as name, age as Customer_age from customer;
+
+
+/* SECTION 9: Aggregate Commands */ 
+
+--COUNT FUNCTION RETURN THE COUNT OF AN EXPRESSION
+
+SELECT COUNT (*) from sales;
+
+select *from sales;
+
+SELECT count (order_line) as "Number of products ordered", COUNT(distinct order_id) as "Number or Orders"
+FROM sales where customer_id= 'CG-12520';
+
+/* SUM FUNCTION */
+
+SELECT SUM (profit) as "Total_Profit"
+FROM sales; 
+
+SELECT SUM(quantity) as "Total_Quantity"
+FROM sales WHERE product_id = 'FUR-TA-10000577';
+
+/* AVERAGE FUNCTION */
+
+SELECT avg(age) AS "Average Customer Age"
+FROM customer;
+--0.10 bc the commussion in 10%
+SELECT avg(sales * 0.10) AS "Average Commission Value"
+FROM sales;
+
+/*MIN AND MAX FUNCTION */
+
+SELECT min (sales) as "MIn_sales_June15"
+FROM sales
+WHERE order_date BETWEEN '2015-06-01' AND '2015-06-30';
+
+SELECT Sales
+FROM sales
+WHERE order_date BETWEEN '2015-06-01' AND '2015-06-30' order by sales asc;
+
+SELECT MAX (sales) as "MAX_sales_June15"
+FROM sales
+WHERE order_date BETWEEN '2015-06-01' AND '2015-06-30';
+
+SELECT Sales
+FROM sales
+WHERE order_date BETWEEN '2015-06-01' AND '2015-06-30' order by sales DESC;
+
+
+/* exercise 8 
+sum all sales
+find the count of customer in north region with age btw 20 and 30
+find the avg age of east regions customers
+find min and max aged customer from philadelphia
+
+*/
+
+SELECT SUM (sales)  as "TOTAL SALES"
+FROM sales;
+
+SELECT *FROM customer;
+
+
+SELECT COUNT(region) as " Number of customer in north  btw 20 to 30 " 
+FROM customer
+WHERE region ='	North' and age BETWEEN '20' and '30';
+
+SELECT avg(age) as "AVG of east region customer"
+From customer
+WHERE region = 'East' ;
+
+SELECT min(age) as "min age of phila" 
+from customer
+where city= 'Philadelphia';
+
+SELECT max(age) as "max age of phila"
+from customer
+where city= 'Philadelphia';
+
+SELECT max(age) as "max age of phila", min(age) as "min age of phila" 
+from customer
+where city= 'Philadelphia';
+
+/* Section 10
+group by */
+
+SELECT region, count(customer_id) as "customer_count"
+FROM customer
+GROUP BY region; 
+
+
+select product_id, sum(quantity) as "quantity_sold" from sales
+group by product_id Order by quantity_sold DESC; 
+
+SELECT customer_id,
+MIN(sales) AS min_sales,
+MAX(sales) as max_sales,
+avg(sales) as avg_sales,
+sum (sales) as total_sales
+FROM sales 
+GROUP BY customer_id
+ORDER BY total_sales DESC
+LIMIT 5;
+
+
+---HAVING----
+
+SELECT region, count (customer_id) as customer_count 
+from customer 
+group by region having count(customer_id)> 200;
+
+SELECT region, count (customer_id) as customer_count 
+from customer 
+WHERE customer_name like 'A%'
+group by region ;
+
+SELECT region, count (customer_id) as customer_count 
+from customer 
+WHERE customer_name like 'A%'
+group by region HAVING count (customer_id)>15;
+
+SELECT product_id,
+MIN(sales) AS min_sales,
+MAX(sales) as max_sales,
+avg(sales) as avg_sales,
+sum (sales) as total_sales,
+count (quantity) as total_sales_quantity,
+count(order_id) as number_of_orders
+FROM sales 
+GROUP BY product_id
+ORDER BY total_sales DESC;
+
+select *from sales;
+
+SELECT product_id, count(quantity) as quantity_product_sold
+from sales
+group by product_id having count (quantity)>10;
+
+
+-- SECTION 11: CONDITIONAL STATEMENT---
+
+--INNER JOIN--
+select customer_id from sales_2015 order by customer_id;
+select customer_id from customer_20_60 order by customer_id;
+SELECT 
+	a.order_line,
+	a.product_id,
+	a.customer_id,
+	a.sales,
+	b.customer_name,
+	b.age
+FROM sales_2015 AS a 
+INNER JOIN customer_20_60 AS b
+on 
+a.customer_id = b.customer_id
+order by customer_id;
+
+
+---LEFT JOIN----
+
+---include all sales value an intersection of a and b
+select customer_id from sales_2015 order by customer_id;
+select customer_id from customer_20_60 order by customer_id;
+SELECT 
+	a.order_line,
+	a.product_id,
+	a.customer_id,
+	a.sales,
+	b.customer_name,
+	b.age
+FROM sales_2015 AS a 
+LEFT JOIN customer_20_60 AS b
+on 
+a.customer_id = b.customer_id
+order by customer_id;
+
+
+--RIGHT JOIN---
+--include all the customer_20_60 values and the interception values of sales_2015
+select customer_id from sales_2015 order by customer_id;
+select customer_id from customer_20_60 order by customer_id;
+SELECT 
+	a.order_line,
+	a.product_id,
+	b.customer_id,--- I change to b to have the cusotomer_id of the customer table
+	a.sales,
+	b.customer_name,
+	b.age
+FROM sales_2015 AS a 
+RIGHT JOIN customer_20_60 AS b
+on 
+a.customer_id = b.customer_id
+order by customer_id;
+
+--FULL OUTER jOIN---
+/*combines the result of both left and right outer joins
+
+The values that are not include in one of the tables will be null 
+at the final result
+
+*/
+
+select customer_id from sales_2015 order by customer_id;
+select customer_id from customer_20_60 order by customer_id;
+SELECT 
+	a.order_line,
+	a.product_id,
+	a.customer_id,
+	a.sales,
+	b.customer_name,
+	b.age
+FROM sales_2015 AS a 
+FULL JOIN customer_20_60 AS b
+on 
+a.customer_id = b.customer_id
+order by customer_id;
+
+
+--CROSS JOIN---
+/* CARTERSIAN PRODUCT BETWEEN TWO SET OF DATA */
+CREATE TABLE month_values (MM interger);
+CREATE TABLE year_Values (YYYY interger);
+
+insert into months_values valies (1),(2),(3),(4),(5),(6),(7),(8),(9),(10),(11),(12)
+SELECT 
+FROM 
+ORDER BY
+ 
+ 
+--EXCEPT COMMAND---
+/* only present customer id that are in sales table */
+SELECT customer_id  FROM sales_2015
+EXCEPT
+SELECT  customer_id FROM customer_20_60
+ORDER BY customer_id;
+
+
+--UNION OPERATOR---
+/* COMBINES THE RESULT SET OF 2 OR MORE SELECT STATEMENTS. IT will remove duplicates 
+*/ 
+
+SELECT customer_id FROM sales_2015
+UNION
+SELECT customer_id FROM customer_20_60
+ORDER BY customer_id; 
+
+---EXERCISE 10----
+/*  find total sales done every state for customer_20_60 and sales
+	get data containg product_id, product name, category, total sales values of that product and total quantity sold
+*/
+
+
+SELECT sales From sales_2015
+SELECT sales from customer_20_60
+SELECT 
+	a.product_id,
+	a.sales,
+	b.sales
+from sales_2015 as a
+full join customer_20_60 as b
+on 
+a.sales = b.sales.
+count (sales) as total_sales;
+order by sales;
+
+---SECTION 13: SUBQUERIES----
+--is a query within a query----
+
+--THIS QUERY HAVE THE SALES OF ALL THE SALE AGE > 60
+--USING WHERE
+SELECT *FROM sales 
+where customer_id in (select customer_id from customer where age>60);
+
+--Subquery in FROM ---
+SELECT 
+	a.product_id,
+	a.product_name,
+	a.category,
+	b.quantity, 
+
+From product AS a 
+LEFT JOIN (select product_id, --using left join 
+		  	SUM(quantity)as quantity from sales
+		   group by product_id) as b
+ON a.product_id = b.product_id
+order by quantity desc; 
+
+---SUBQUERY USING SELECT ---
+
+SELECT customer_id, order_line, (select customer_name from customer where customer.customer_id= sales.customer_id)
+from sales
+order by customer_id; 
+
+--SUBQUERY ---
+--EXERCICE 11--
+
+--get data with all columns of sales tables, and customer name, customer age, product name and category are in the same result set. 
+--use join in subquery
+
+SELECT a.customer_name, a.age, b.ategory, b.product_id
+FROM customer as a
+LEFT JOIN (select product_id, and product_id from sales
+		  group by product_id) as b 
+		  on a.product_id= b.product_id
+		order by product_id;
+		
+		
+--Get data with all columns of sales table, and customer name, customer age, product name and category
+-- are in the same result set. (use JOIN in subquery)
+SELECT a.*, b.product_name, b.category, c.customer_name, c.age
+FROM sales AS a
+LEFT JOIN
+(SELECT product_id, product_name, category FROM product) AS b
+ON a.product_id = b.product_id
+LEFT JOIN
+(SELECT customer_id, customer_name, age FROM customer) AS c
+ON a.customer_id = c.customer_id
+ORDER BY order_line ASC;
+
+
+/* SECTION 14: Views and Indexes*/
+
+--it is a query not a table but behave as a table 
+--it is a virtual table
+
+CREATE VIEW logistics AS 
+SELECT 
+	a.order_line,
+	a.order_id,
+	b.customer_name,
+	b.city,
+	b.state,
+	b.county
+FROM sales as a
+left join customer as b
+on a.customer_id= b.customer_id
+order by order_line;
+
+--to see the view---
+select *from logistics;
+
+--DROP OR UPDATE---
+
+DROP VIEW logistics; --delete the view
+
+UPDATE VIEW logicits ;
+
+--INDEX--
+
+create index mon_idx
+on month_value(MM);
+
+---DROP OR RENAME INDEX---
+
+drop index mon_idx;
+
+alter index [if exists] index_name,
+	RENAME TO new_index_name; 
+
+--SECTION 15: STRING FUNCTIONS---
+--LENGTH--
+
+SELECT Customer_name, LENGHT (customer_Name) as characters 
+from customer
+where length (customer_name) age> 30; --this return the customer name with 30 character length
+
+ 
+--UPPER & LOWER----
+/*
+	This function converts all characters in the specified string to uppercase/lowercase
+*/
+
+SELECT UPPER ('Start-Tech Academy');
+
+SELECT LOWER ('Start-Tech Academy');
+
+/*
+		REPLACE FUNCTION
+		replace all accurrences of a specified string
+*/
+
+
+SELECT  Customer_name, country,
+	REPLACE (lower(country), 'united states','US') AS country_new
+from customer;
+
+/*TRIM, TRIM, & RTRIM */
+
+select trim (leading ' ' from '    Start-Tech Academy    '); --remove from left size
+select trim (trailing ' ' from '    Start-Tech Academy    ');--remove from right size
+select trim (both ' ' from '    Start-Tech Academy    ');--remove both
+
+select trim ('  Start-Tech Academy    ');--remove both
+select rtrim ('  Start-Tech Academy    ', ' ');
+select ltrim ('  Start-Tech Academy    ', ' ');
+
+
+/* CONCATENATION */
+
+select Customer_name, 
+	city || ' , ' ||state|| ' , '||country as address
+from customer;
+
+/* SUBSTRING FUNCTION */
+---allow you to extact a substring from a string 
+
+
+SELECT 
+	customer_id,
+	customer_name, 
+	SUBSTRING(Customer_id FOR 2) as cust_group
+from customer
+where SUBSTRING (customer_id For 2)= 'AB';
+
+SELECT 
+	customer_id,
+	customer_name,
+	substring (customer_id from 4 for 5) as customer_num
+from customer
+where substring (customer_id for 2) = 'AB';
+
+--STRING AGGREGATOR----
+--concatenates input values into a string, separated by delimiter
+
+--string aggregator ---
+select *from sales order by order_id;
+SELECT 
+	order_id,
+	STRING_AGG (product_id,' , ')
+	FROM sales
+	GROUP BY order_id;
+
+/* EXERCISE 13: STRING FUNCTION */ 
+
+-- FIND THE MAXIMUM LENGTH OF CHARACTERS IN THE PRODUCT NAME STRING FROM PRODUCT TABLE
+SELECT *from product;
+
+SELECT product_name, length (product_name) as characters
+from product;
+
+SELECT MAX(LENGTH(product_name)) from product;
+
+--RETRIEVE PODRUCT NAME, SUB_CATEGORY and category from product table an additional columna named product details 
+SELECT product_name, sub_category, category,
+		product_name ||' , '||sub_category||' , '||category as product_details
+	from product; 	
+
+--ANALYZE THE PRODUCT_ID COLUMN AND TAKE OUT THE THREE PARTS COMPOSING THE PRODUCT_ID IN THREE DIFFERENT COLUMNS.
+
+SELECT *FROM product; 
+SELECT *FROM sales;
+SELECT product_id,
+	SUBSTRING(product_id FOR 3 )AS LOCATOR
+	FROM product;
+	
+SELECT product_id,
+		substring (product_id from 5 for 2) as code
+		from product;
+SELECT product_id,
+		substring(product_id from 8) as id 
+		from product;
+
+select product_id,
+			SUBSTRING(product_id FOR 3 )AS LOCATOR,
+				substring (product_id from 5 for 2) as code,
+					substring(product_id from 8) as id
+					from product;
+					
+--SELECT LIST DOWN COMMA SEPARATED PRODUCT NAME WHERE SUB-CATEGORY IS EITHER CHAIS OR TABLES
+
+select 
+	product_id,
+	string_agg (product_name, ' , ')
+	from product
+	where sub_category in ('Chairs', 'Tables')
+	group by product_id;
+	
+select string_agg (product_name, ' , ') from product 
+where sub_category in ('Chairs', 'Tables');
+
+--CEIL & FLOOR
+--ceil function returns the smallest inter values is greater than or equal to a number---
+-- FLOOR RETURNS LARGEST INTEGER VALUES
+select *from sales;
+SELECT order_line,
+		sales,
+		CEIL(sales),
+		FLOOR (sales) 
+		from sales;
+--RANDOM FUCTION---
+/* a=10
+	b=50 */
+--random btw 0 and 1, 10 / 50, 10/50
+select random(), random ()*40+10, floor(random()*40)+ 10;
+
+--SETSEED---
+
+--if the we set seed by callin the setseed function, then the random function will return a repeatable sequence of random number tha is derived the seed
+
+SELECT SETSEED(0.5);
+SELECT RANDOM(); --0.24499
+SELECT RANDOM(); --0.52001
+
+SELECT SETSEED(0.5);
+SELECT RANDOM();
+SELECT RANDOM();
+
+
+---ROUND FUNCTION RETURN A NUMBER ROUNDED TO A CERTAIN NUMBER OF DECIMAL PLACES
+SELECT *FROM sales;
+
+SELECT order_line,
+		sales,
+		round(sales) 
+	from sales order by sales desc; 
+
+-----POWER FUNCTION-------
+--RETURNS m raised to the nth power
+---power(m,n) m raied to the power n
+
+select power (6,2);
+
+select power(age,2), age from customer;
+
+---EXERCISE 14 --- 
+
+/* 
+	You are running a lottery for your customer. So pick, 
+	a list of 5 luck customer from customer table using random function
+*/
+
+SELECT customer_id, 
+	random() as rand_n from customer 
+	order by rand_n limit 5; 
+
+-----CURRENT DATE & TIME ----
+
+select current_date,
+	 current_time,
+	 current_time(1),
+	 current_time(3),
+	 current_timestamp
+	; 
+
+
+------AGE FUNTION------
+SELECT age ('2018-12-27', '2017-06-03');
+
+select order_line,
+		ship_date,
+		order_date,
+		age(ship_date, order_date) as time_taken
+		from sales
+		order by time_taken desc;
+
+---EXTRACT FUNTION---
+--FUNTION FUNCTION EXTRACTS PARTS FROM A DATE
+
+select extract(day from current_date);
+
+select current_timestamp, extract(hour from current_timestamp);
+
+SELECT order_line, ship_date, (EXTRACT(epoch FROM ship_date)- extract (epoch from order_date)) as sec_taken
+	from sales; 
+
+----Conversion to string---
+--CONVERT A NUMBER OR DATE TO A STRING 
+
+SELECT sales, 'Total sales value for this ordder is '|| to_char(sales, '$9,999.99') as massage
+																					from sales; 
+
+SELECT order_date, to_char(order_date, 'Month DD YY') FROM sales; 
+
+
+---CONVERSION TO DATE---
+--to_date function converst a string to a date
+
+SELECT TO_DATE('2014/04/25', 'YYY/MM/DD')
+SELECT TO_NUMBER ('$2045.876', 'L9,999.999'); 
+
+
+---USER ACCESS CONTROL FUNCTIONS-----
+
+---create user statement creates a database account that allows you to log into the database
+
+create USER starttech
+	with password 'academy'; 
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON products to starttech; 
+
+revoke delete on product from starttech; 
+
+DROP USER starttech;
+revoke all on product from starttech;
+
+alter user starttech 
+rename to user_t;
+
+select usename from pg_user;
+select *from pg_user;
+
+select distinct usename from pg_stat_activity;
+select distinct* from pg_stat_activity;
+
+
+--BONUS---
+
+--Tablespace----
+
+create tablespace <tablespace name> 
+location <location on drive>;
+
+--PRIMARY KEY AND FOREIGN KEY
+
+
+

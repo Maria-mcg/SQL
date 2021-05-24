@@ -1,0 +1,35 @@
+create table Science_class(
+	Enrollment_no int,
+	Name varchar,
+	Science_Marks int
+
+);
+--Code to insert data
+INSERT INTO Science_class values
+(1, 'Popeye', 33),
+(2,'Olive', 54),
+(3,'Brutus', 98);
+
+--Code to insert data from a file
+COPY Science_class from 'C:\SQL COPY FILE\Classroom\Student.csv' delimiter ','  csv header;
+
+SELECT *FROM Science_class;
+
+SELECT Name FROM Science_class WHERE Science_Marks > 60; 
+
+SELECT  *FROM Science_class WHERE Science_Marks >35 AND Science_Marks < 60; 
+
+SELECT  *FROM Science_class WHERE NOT Science_Marks <=35 OR Science_Marks >= 60; 
+
+SELECT *FROM Science_class;
+
+--Update POPEYE SCORE TO 45--
+UPDATE science_class SET science_marks=  46 WHERE name = 'Popeye'
+
+DELETE FROM Science_class
+WHERE name= 'Robb';
+
+SELECT *FROM Science_class;
+
+ALTER TABLE Science_class RENAME COLUMN name to student_name; 
+
